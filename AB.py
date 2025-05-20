@@ -31,10 +31,13 @@ print("Outliers:\n", outliers)
 df['last_review'] = pd.to_datetime(df['last_review'], errors='coerce')
 
 #Drop missing columns
-df_cleaned = df.dropna()
+df_cleaned = df.dropna(subset=['name', 'host_name'])
 
 #Drop duplicates
-df_cleaned = df.drop_duplicates()
+df_cleaned = df_cleaned.drop_duplicates()
+
+#Fill the missing values
+df = df.fillna(value={col: 'N/A' for col in df.columns if col != 'last_review'})
 
 #Standardize the text to check for typos
 df_cleaned['neighbourhood'] = df_cleaned['neighbourhood'].str.lower().str.strip()
@@ -46,10 +49,16 @@ print(df_cleaned['neighbourhood'].value_counts())
 print(df_cleaned[df_cleaned['price'] <= 0])
 print(df_cleaned[df_cleaned['minimum_nights'] <= 0])
 
+#Remove invalid values
 df_cleaned = df_cleaned[df_cleaned['price'] > 0]
+df_cleaned = df_cleaned[df_cleaned['minimum_nights'] > 0]
 
-#Check for valid dates
-#df_cleaned['last_review'] = pd.to_datetime(df_cleaned['last_review'], errors='coerce')
+#Remove the outliers
+Q1 = df_cleaned['price'].quantile(0.25)
+Q3 = df_cleaned['price'].quantile(0.75)
+IQR = Q3 - Q1
+df_cleaned = df_cleaned[(df_cleaned['price'] >= Q1 - 1.5 * IQR) & (df_cleaned['price'] <= Q3 + 1.5 * IQR)]
+
 
 #Top 10 hosts
 top_hosts = df_cleaned['host_id'].value_counts().head(10)
@@ -76,3 +85,7 @@ plt.title('Average price per room type')
 
 #Export to a csv file
 df_cleaned.to_csv('clean_ab_nyc.csv', index=False) 
+
+print(df_cleaned.info())  # Should show no missing values
+print(df_cleaned.describe())  # Check price and nights are reasonable
+print(df_cleaned.head())
