@@ -18,7 +18,7 @@ I used **Python** for data cleaning and exploratory analysis, and **Tableau** to
 ## Files Included
 
 - `AB_NYC_2019.csv` – Raw dataset from [Kaggle](https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data)
-- `nyc_airbnb_cleaning_script.py` – Python script for data cleaning and prep
+- `AB.py` – Python script for data cleaning and prep
 - `clean_ab_nyc.csv` – Cleaned version of the dataset used in Tableau
 - `README.md` – You’re here!
 
